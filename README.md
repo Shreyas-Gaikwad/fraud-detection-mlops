@@ -195,5 +195,5 @@ fraud-detection-mlops/
 ## 👤 Author
 
 Built by **[Shreyas Gaikwad]**
-End-to-End Machine Learning & MLOps
 
+End-to-End Machine Learning & MLOps
