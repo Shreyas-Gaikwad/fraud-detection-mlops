@@ -1,18 +1,21 @@
-# Fraud Detection MLOps System 🚨
+# Fraud Detection MLOps System
 
 An end-to-end, production-grade fraud detection system built with a strong focus on **decision optimization, explainability, and deployment**.
 This project goes beyond model training to address real-world challenges such as class imbalance, threshold selection, training–serving skew, and model governance.
 
-🔗 **Live Demo (Swagger UI):**
+Live Demo (Swagger UI):
 [https://fraud-detection-mlops-f98a.onrender.com/docs/](https://fraud-detection-mlops-f98a.onrender.com/docs/)
+
+**Tech Stack:**  
+Python · Pandas · NumPy · Scikit-learn · XGBoost · MLflow · SHAP · FastAPI · Docker · Render
 
 <img width="1577" height="812" alt="image" src="https://github.com/user-attachments/assets/6b75a66b-e3f7-44d8-be8c-f1d327ad3daa" />
 
 ---
 
-## 🔍 Problem Statement
+## Problem Statement
 
-Credit card fraud detection is a **highly imbalanced classification problem** where:
+Credit card fraud detection is a highly imbalanced classification problem where:
 
 * Fraud rates are extremely low
 * False positives create customer friction
@@ -26,79 +29,62 @@ The goal is not just to build a classifier, but to design a **decision system** 
 
 ---
 
-## 🧠 Key Design Decisions
+## Features
 
-### 1️⃣ Metric Discipline
-
-* Used **PR-AUC** instead of accuracy or ROC-AUC
-* Explicitly analyzed metric behavior under extreme class imbalance
-
-### 2️⃣ Cost-Aware Learning
-
-* Simulated realistic fraud rates (1% / 5%)
-* Used class-weighted models to reflect asymmetric costs
-
-### 3️⃣ Decision Threshold Optimization
-
-* Rejected the default 0.5 probability cutoff
-* Selected an operational threshold (**0.006**) based on:
-
-  * Maximum recall
-  * False Positive Rate ≤ 0.1%
-
-📌 *This threshold is treated as a first-class artifact, not a magic constant.*
-
-### 4️⃣ Training–Serving Consistency
-
-* Identified and fixed feature schema mismatch (`id` leakage)
-* Ensured deterministic feature ordering and schema alignment
-* Prevented silent inference failures common in production ML systems
+* End-to-end fraud detection pipeline (training to deployment)
+* Cost-sensitive learning for extreme class imbalance
+* Decision-threshold optimization based on recall–FPR trade-offs
+* MLflow experiment tracking
+* FastAPI-based inference service
+* SHAP-based local explainability via `/explain` endpoint
+* Dockerized application
+* Public cloud deployment on Render
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```
 Raw Data
-   │
-   ▼
+   |
+   v
 Data Preprocessing & Imbalance Simulation
-   │
-   ▼
+   |
+   v
 Model Training (Logistic Regression, XGBoost)
-   │
-   ▼
+   |
+   v
 MLflow Experiment Tracking
-   │
-   ▼
+   |
+   v
 Threshold Optimization (Recall vs FPR)
-   │
-   ▼
+   |
+   v
 FastAPI Inference Service
-   │
-   ├── /predict  → Probability-based fraud decision
-   └── /explain  → SHAP-based feature attribution
-   │
-   ▼
-Dockerized Deployment → Render (Cloud)
+   |
+   |-- /predict  -> Probability-based fraud decision
+   |-- /explain  -> SHAP-based feature attribution
+   |
+   v
+Dockerized Deployment -> Render (Cloud)
 ```
 
 ---
 
-## 🤖 Models Used
+## Models Used
 
 | Model               | Purpose                              |
 | ------------------- | ------------------------------------ |
 | Logistic Regression | Interpretable baseline               |
 | XGBoost             | High-performance fraud ranking model |
 
-XGBoost was selected for deployment due to superior **PR-AUC** and ranking performance.
+XGBoost was selected for deployment due to superior PR-AUC and probability ranking performance under class imbalance.
 
 ---
 
-## 📊 Explainability with SHAP
+## Explainability with SHAP
 
-To support governance and human review, the system exposes a dedicated `/explain` endpoint using **SHAP**.
+To support governance and human review, the system exposes a dedicated `/explain` endpoint using SHAP.
 
 Example response:
 
@@ -114,28 +100,24 @@ Example response:
 }
 ```
 
-This enables:
-
-* Feature-level attribution per transaction
-* Regulatory explainability
-* Human-in-the-loop decision support
+This provides feature-level attribution for each prediction and enables transparent, auditable fraud decisions.
 
 ---
 
-## 🚀 API Endpoints
+## API Endpoints
 
-| Endpoint   | Description                  |
-| ---------- | ---------------------------- |
-| `/health`  | Service health check         |
-| `/predict` | Fraud probability + decision |
-| `/explain` | SHAP-based explanation       |
+| Endpoint   | Description                    |
+| ---------- | ------------------------------ |
+| `/health`  | Service health check           |
+| `/predict` | Fraud probability and decision |
+| `/explain` | SHAP-based explanation         |
 
 Swagger UI:
-👉 [https://fraud-detection-mlops-f98a.onrender.com/docs/](https://fraud-detection-mlops-f98a.onrender.com/docs/)
+[https://fraud-detection-mlops-f98a.onrender.com/docs/](https://fraud-detection-mlops-f98a.onrender.com/docs/)
 
 ---
 
-## 🐳 Deployment & MLOps
+## Deployment & MLOps
 
 * FastAPI for inference
 * Dockerized service
@@ -149,51 +131,94 @@ This demonstrates full **model-to-production lifecycle ownership**.
 
 ---
 
-## 🧪 Testing & Validation
+## Data
 
-* Tested locally via Swagger UI
-* Verified via `curl`
-* Validated using known fraud and non-fraud samples
-* Confirmed behavior under low-risk and high-risk inputs
+### Dataset Source
+
+The dataset used in this project is the **[Credit Card Fraud Detection Dataset 2023](https://www.kaggle.com/datasets/nelgiriyewithana/credit-card-fraud-detection-dataset-2023)**, publicly available on Kaggle.
+
+Due to licensing and size constraints, the dataset is not included in this repository. Users are expected to download the dataset separately and place it in the appropriate data directory before training.
+
+### Dataset Description
+
+* Contains anonymized transaction features (`V1`–`V28`) derived via PCA
+* Includes transaction `Amount`
+* Highly imbalanced target variable (`Class`)
+* Identifier column (`id`) is removed during training to prevent leakage
+
+The dataset is used to simulate realistic fraud rates and evaluate model behavior under operational constraints.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 fraud-detection-mlops/
 ├── api/               # FastAPI application
 ├── src/               # Training, evaluation, utilities
-├── artifacts/         # Trained model & threshold
+├── artifacts/         # Trained model and decision threshold
 ├── docker/            # Dockerfile
-├── notebooks/         # Analysis & threshold tuning
+├── notebooks/         # Analysis and threshold tuning
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## 🧾 Key Learnings
+## Installation
 
-* Fraud detection is a **decision problem**, not just a classification task
-* Threshold selection matters more than raw accuracy
-* Training–serving skew is a real production risk
-* Explainability is essential for trust and governance
-* Deployment completes the ML lifecycle
+Clone the repository:
+
+```bash
+git clone https://github.com/your-username/fraud-detection-mlops.git
+cd fraud-detection-mlops
+```
+
+Create a virtual environment and install dependencies:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
+pip install -r requirements.txt
+```
 
 ---
 
-## 🔮 Future Improvements
+## Usage
 
-* Batch prediction endpoint
-* Drift detection on input distributions
-* CI pipeline for automated builds
-* Cloud deployment on AWS ECS
+### Run locally
+
+```bash
+uvicorn api.app:app --reload
+```
+
+Open Swagger UI:
+
+```
+http://127.0.0.1:8000/docs
+```
+
+### Run with Docker
+
+```bash
+docker build -t fraud-detection-mlops -f docker/Dockerfile .
+docker run -p 8000:8000 fraud-detection-mlops
+```
 
 ---
 
-## 👤 Author
+## Contributing
 
-Built by **[Shreyas Gaikwad]**
+Contributions are welcome.
 
-End-to-End Machine Learning & MLOps
+Please submit pull requests or open issues for:
+
+* Bug reports
+* Feature requests
+* Documentation improvements
+
+---
+
+## Author
+
+Built by **[Shreyas Gaikwad]** | End-to-End Machine Learning and MLOps
