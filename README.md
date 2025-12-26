@@ -1,111 +1,108 @@
-FRAUD DETECTION MLOPS SYSTEM
+# Fraud Detection MLOps System 🚨
 
-An end-to-end, production-grade fraud detection system with a strong focus on
-decision optimization, explainability, and deployment. This project goes beyond
-model training to address real-world challenges such as class imbalance,
-threshold selection, training–serving skew, and model governance.
+An end-to-end, production-grade fraud detection system built with a strong focus on **decision optimization, explainability, and deployment**.
+This project goes beyond model training to address real-world challenges such as class imbalance, threshold selection, training–serving skew, and model governance.
 
-Live Demo (Swagger UI):
-https://fraud-detection-mlops-f98a.onrender.com/docs/
+🔗 **Live Demo (Swagger UI):**
+[https://fraud-detection-mlops-f98a.onrender.com/docs/](https://fraud-detection-mlops-f98a.onrender.com/docs/)
 
+<img width="1577" height="812" alt="image" src="https://github.com/user-attachments/assets/6b75a66b-e3f7-44d8-be8c-f1d327ad3daa" />
 
-==================================================
-PROBLEM STATEMENT
-==================================================
+---
 
-Credit card fraud detection is a highly imbalanced classification problem where:
-- Fraud cases are extremely rare
-- False positives create customer friction
-- Accuracy is a misleading metric
+## 🔍 Problem Statement
 
-The goal of this project is not just to build a classifier, but to design a
-decision system that:
-- Maximizes fraud capture (recall)
-- Controls false positives (FPR)
-- Is explainable and deployable in production
+Credit card fraud detection is a **highly imbalanced classification problem** where:
 
+* Fraud rates are extremely low
+* False positives create customer friction
+* Accuracy is a misleading metric
 
-==================================================
-KEY DESIGN DECISIONS
-==================================================
+The goal is not just to build a classifier, but to design a **decision system** that:
 
-1) Metric Discipline
--------------------
-- Used Precision-Recall AUC (PR-AUC) instead of accuracy
-- Explicitly analyzed metric behavior under extreme class imbalance
+* Maximizes fraud capture (recall)
+* Controls false positives (FPR)
+* Is explainable and deployable
 
-2) Cost-Aware Learning
----------------------
-- Simulated realistic fraud rates (1% and 5%)
-- Used class-weighted models to reflect asymmetric costs
+---
 
-3) Decision Threshold Optimization
-----------------------------------
-- Rejected the default 0.5 probability cutoff
-- Selected an operational threshold of 0.006 based on:
-  - Maximum recall
-  - False Positive Rate ≤ 0.1%
+## 🧠 Key Design Decisions
 
-The threshold is treated as a first-class artifact, not a magic constant.
+### 1️⃣ Metric Discipline
 
-4) Training–Serving Consistency
--------------------------------
-- Identified and fixed feature schema mismatch (ID leakage)
-- Enforced deterministic feature ordering
-- Ensured strict alignment between training and inference pipelines
+* Used **PR-AUC** instead of accuracy or ROC-AUC
+* Explicitly analyzed metric behavior under extreme class imbalance
 
+### 2️⃣ Cost-Aware Learning
 
-==================================================
-SYSTEM ARCHITECTURE
-==================================================
+* Simulated realistic fraud rates (1% / 5%)
+* Used class-weighted models to reflect asymmetric costs
 
+### 3️⃣ Decision Threshold Optimization
+
+* Rejected the default 0.5 probability cutoff
+* Selected an operational threshold (**0.006**) based on:
+
+  * Maximum recall
+  * False Positive Rate ≤ 0.1%
+
+📌 *This threshold is treated as a first-class artifact, not a magic constant.*
+
+### 4️⃣ Training–Serving Consistency
+
+* Identified and fixed feature schema mismatch (`id` leakage)
+* Ensured deterministic feature ordering and schema alignment
+* Prevented silent inference failures common in production ML systems
+
+---
+
+## 🏗️ System Architecture
+
+```
 Raw Data
-  |
-  v
+   │
+   ▼
 Data Preprocessing & Imbalance Simulation
-  |
-  v
+   │
+   ▼
 Model Training (Logistic Regression, XGBoost)
-  |
-  v
+   │
+   ▼
 MLflow Experiment Tracking
-  |
-  v
+   │
+   ▼
 Threshold Optimization (Recall vs FPR)
-  |
-  v
+   │
+   ▼
 FastAPI Inference Service
-  |        |
-  |        +-- /predict  (fraud probability + decision)
-  |        +-- /explain  (SHAP-based explanations)
-  |
-  v
-Dockerized Deployment -> Render (Cloud)
+   │
+   ├── /predict  → Probability-based fraud decision
+   └── /explain  → SHAP-based feature attribution
+   │
+   ▼
+Dockerized Deployment → Render (Cloud)
+```
 
+---
 
-==================================================
-MODELS USED
-==================================================
+## 🤖 Models Used
 
-- Logistic Regression
-  Purpose: Interpretable baseline model
+| Model               | Purpose                              |
+| ------------------- | ------------------------------------ |
+| Logistic Regression | Interpretable baseline               |
+| XGBoost             | High-performance fraud ranking model |
 
-- XGBoost
-  Purpose: High-performance fraud ranking model
+XGBoost was selected for deployment due to superior **PR-AUC** and ranking performance.
 
-XGBoost was selected for deployment due to superior PR-AUC and probability
-ranking performance.
+---
 
+## 📊 Explainability with SHAP
 
-==================================================
-EXPLAINABILITY WITH SHAP
-==================================================
-
-The system exposes a dedicated /explain endpoint using SHAP to provide
-feature-level attribution for individual predictions.
+To support governance and human review, the system exposes a dedicated `/explain` endpoint using **SHAP**.
 
 Example response:
 
+```json
 {
   "fraud_probability": 0.999284,
   "decision": true,
@@ -115,93 +112,86 @@ Example response:
     "V4": 1.412652
   }
 }
+```
 
 This enables:
-- Regulatory explainability
-- Human-in-the-loop review
-- Model debugging and governance
 
+* Feature-level attribution per transaction
+* Regulatory explainability
+* Human-in-the-loop decision support
 
-==================================================
-API ENDPOINTS
-==================================================
+---
 
-/health
-- Service health check
+## 🚀 API Endpoints
 
-/predict
-- Returns fraud probability and threshold-based decision
-
-/explain
-- Returns SHAP-based explanation for a single prediction
+| Endpoint   | Description                  |
+| ---------- | ---------------------------- |
+| `/health`  | Service health check         |
+| `/predict` | Fraud probability + decision |
+| `/explain` | SHAP-based explanation       |
 
 Swagger UI:
-https://fraud-detection-mlops-f98a.onrender.com/docs/
+👉 [https://fraud-detection-mlops-f98a.onrender.com/docs/](https://fraud-detection-mlops-f98a.onrender.com/docs/)
 
+---
 
-==================================================
-DEPLOYMENT & MLOPS
-==================================================
+## 🐳 Deployment & MLOps
 
-- FastAPI for inference
-- Dockerized service
-- Deployed on Render
-- Public cloud endpoint behind Cloudflare
-- Structured logging for monitoring and alert-rate tracking
+* FastAPI for inference
+* Dockerized service
+* Deployed on **Render**
+* Cloudflare-proxied public endpoint
+* Structured logging for monitoring and alert-rate tracking
 
-This demonstrates full ownership of the model-to-production lifecycle.
+<img width="1580" height="761" alt="image" src="https://github.com/user-attachments/assets/c1a2a1e5-fbce-4aa2-a620-1de87155c664" />
+This demonstrates full **model-to-production lifecycle ownership**.
 
+---
 
-==================================================
-TESTING & VALIDATION
-==================================================
+## 🧪 Testing & Validation
 
-- Tested locally using Swagger UI
-- Verified using curl requests
-- Validated with known fraud and non-fraud samples
-- Confirmed stable behavior under low-risk and high-risk inputs
+* Tested locally via Swagger UI
+* Verified via `curl`
+* Validated using known fraud and non-fraud samples
+* Confirmed behavior under low-risk and high-risk inputs
 
+---
 
-==================================================
-PROJECT STRUCTURE
-==================================================
+## 📁 Project Structure
 
+```
 fraud-detection-mlops/
-|
-|-- api/            FastAPI application
-|-- src/            Training, evaluation, utilities
-|-- artifacts/      Trained model and decision threshold
-|-- docker/         Dockerfile
-|-- notebooks/      Analysis and threshold tuning
-|-- requirements.txt
-|-- README.txt
+├── api/               # FastAPI application
+├── src/               # Training, evaluation, utilities
+├── artifacts/         # Trained model & threshold
+├── docker/            # Dockerfile
+├── notebooks/         # Analysis & threshold tuning
+├── requirements.txt
+└── README.md
+```
 
+---
 
-==================================================
-KEY LEARNINGS
-==================================================
+## 🧾 Key Learnings
 
-- Fraud detection is a decision problem, not just classification
-- Threshold selection matters more than raw accuracy
-- Training–serving skew is a real production risk
-- Explainability is critical for trust and governance
-- Deployment completes the ML lifecycle
+* Fraud detection is a **decision problem**, not just a classification task
+* Threshold selection matters more than raw accuracy
+* Training–serving skew is a real production risk
+* Explainability is essential for trust and governance
+* Deployment completes the ML lifecycle
 
+---
 
-==================================================
-FUTURE IMPROVEMENTS
-==================================================
+## 🔮 Future Improvements
 
-- Batch prediction endpoint
-- Drift detection on input distributions
-- CI pipeline for automated builds
-- Deployment on AWS ECS
+* Batch prediction endpoint
+* Drift detection on input distributions
+* CI pipeline for automated builds
+* Cloud deployment on AWS ECS
 
+---
 
-==================================================
-AUTHOR
-==================================================
+## 👤 Author
 
-Built by Shreyas Gaikwad
-MCA (AI & ML)
-End-to-End Machine Learning and MLOps
+Built by **[Shreyas Gaikwad]**
+End-to-End Machine Learning & MLOps
