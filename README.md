@@ -170,7 +170,7 @@ fraud-detection-mlops/
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/fraud-detection-mlops.git
+git clone https://github.com/Shreyas-Gaikwad/fraud-detection-mlops.git
 cd fraud-detection-mlops
 ```
 
@@ -222,3 +222,4 @@ Please submit pull requests or open issues for:
 ## Author
 
 Built by **[Shreyas Gaikwad]** | End-to-End Machine Learning and MLOps
+
