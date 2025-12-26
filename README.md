@@ -144,6 +144,7 @@ Swagger UI:
 * Structured logging for monitoring and alert-rate tracking
 
 <img width="1580" height="761" alt="image" src="https://github.com/user-attachments/assets/c1a2a1e5-fbce-4aa2-a620-1de87155c664" />
+
 This demonstrates full **model-to-production lifecycle ownership**.
 
 ---
@@ -195,3 +196,4 @@ fraud-detection-mlops/
 
 Built by **[Shreyas Gaikwad]**
 End-to-End Machine Learning & MLOps
+
