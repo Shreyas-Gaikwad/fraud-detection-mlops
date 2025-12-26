@@ -1,0 +1,6 @@
+{
+  "threshold": 0.006,
+  "metric": "max_recall_under_fpr_0.1pct",
+  "recall": 0.857,
+  "precision": 0.261
+}
