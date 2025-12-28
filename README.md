@@ -222,6 +222,5 @@ Please submit pull requests or open issues for:
 ## Author
 
 Built by **[Shreyas Gaikwad]**
+
 Focus: End-to-End Machine Learning and MLOps
-
-
